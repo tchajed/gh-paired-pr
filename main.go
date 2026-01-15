@@ -11,6 +11,7 @@ import (
 )
 
 var verbose bool
+var showCommit bool
 
 func verbosePrintf(format string, args ...any) {
 	if verbose {
@@ -35,6 +36,7 @@ func main() {
 	flag.StringVar(&dependentRepo, "dependency", "", "repo to look for a dependent PR")
 	flag.IntVar(&prNum, "pr", 0, "PR to check in base repo")
 	flag.BoolVar(&verbose, "verbose", false, "print extra info to stderr")
+	flag.BoolVar(&showCommit, "commit", false, "include commit hash in output (URL<tab>hash)")
 	flag.Parse()
 
 	baseRepo = normalizeRepoToSlug(baseRepo)
@@ -72,9 +74,13 @@ func main() {
 
 	verbosePrintf("INFO depends on: %s#%d\n", info.DependentSlug, info.DependentNum)
 	verbosePrintf("INFO status: %s\n", info.DependentPr.GetState())
-	verbosePrintf("INFO source: %s at %s\n", info.SourceSlug, info.SourceRef)
+	verbosePrintf("INFO source: %s at %s (%s)\n", info.SourceSlug, info.SourceRef, info.SourceSHA)
 	if !(info.DependentPr.GetState() == "open") {
 		return
 	}
-	fmt.Println(info.SourceUrl())
+	if showCommit {
+		fmt.Printf("%s\t%s\n", info.SourceUrl(), info.SourceSHA)
+	} else {
+		fmt.Println(info.SourceUrl())
+	}
 }

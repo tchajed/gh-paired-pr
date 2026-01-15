@@ -18,6 +18,7 @@ type PrDependencyInfo struct {
 	DependentSlug string
 	SourceSlug    string
 	SourceRef     string
+	SourceSHA     string
 }
 
 func (info *PrDependencyInfo) SourceUrl() string {
@@ -63,11 +64,12 @@ func dependentPr(description string, repoSlug string) (pr int, ok bool) {
 	return
 }
 
-// Get the source (slug and ref) of a PR
-func prSource(pr *github.PullRequest) (slug string, ref string) {
+// Get the source (slug, ref, and SHA) of a PR
+func prSource(pr *github.PullRequest) (slug string, ref string, sha string) {
 	base := pr.GetHead()
 	slug = fmt.Sprintf("%s/%s", base.GetRepo().GetOwner().GetLogin(), base.GetRepo().GetName())
 	ref = base.GetRef()
+	sha = base.GetSHA()
 	return
 }
 
@@ -101,7 +103,7 @@ func CheckPrDependency(client *github.Client, mainRepoSlug string, prNum int, de
 	}
 
 	info.DependentPr = dependentPr
-	info.SourceSlug, info.SourceRef = prSource(dependentPr)
+	info.SourceSlug, info.SourceRef, info.SourceSHA = prSource(dependentPr)
 
 	return info, nil
 }
