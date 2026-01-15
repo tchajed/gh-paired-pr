@@ -79,8 +79,8 @@ func main() {
 		return
 	}
 	if showCommit {
-		fmt.Printf("%s\t%s\n", info.SourceUrl(), info.SourceSHA)
+		fmt.Printf("%s#%s\n", info.SourceUrl(), info.SourceSHA)
 	} else {
-		fmt.Println(info.SourceUrl())
+		fmt.Printf("%s\n", info.SourceUrl())
 	}
 }
